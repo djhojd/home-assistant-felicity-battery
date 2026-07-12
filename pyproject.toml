@@ -1,0 +1,40 @@
+[project]
+name = "fsolar"
+version = "0.1.0"
+description = "Home Assistant custom integration for Felicity Solar (FSolar) batteries"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+# Default dev group: pure-logic tests + linters. No Home Assistant here, so it
+# installs cleanly on Windows/macOS/Linux without compiling C extensions.
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "ty>=0.0.1a1",
+]
+# Full Home Assistant test harness for the integration-glue tests. HA has
+# Linux-only build deps, so run this group in WSL or CI, not native Windows:
+#   uv sync --group ha
+ha = [
+    "pytest-homeassistant-custom-component>=0.13.0",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# `asyncio_mode = auto` is added in CI once the HA harness (which brings
+# pytest-asyncio) is installed via `uv sync --group ha`. The local pure-logic
+# suite has no async tests, so it isn't set here.
+
+[tool.ty.environment]
+# Home Assistant isn't installed in the default (Windows) dev env; don't fail
+# type-checking on its imports. CI type-checks with HA present.
+root = ["./custom_components", "./tests"]

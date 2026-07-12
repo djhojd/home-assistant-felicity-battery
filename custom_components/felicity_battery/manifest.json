@@ -1,0 +1,12 @@
+{
+  "domain": "felicity_battery",
+  "name": "Felicity Battery (FLA48300)",
+  "codeowners": ["@djhojd"],
+  "config_flow": true,
+  "documentation": "https://github.com/djhojd/home-assistant-felicity-battery",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/djhojd/home-assistant-felicity-battery/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

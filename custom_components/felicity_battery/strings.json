@@ -1,0 +1,107 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Felicity Battery (FLA48300)",
+        "description": "Sign in with your FSolar / Felicity Cloud account. Your password is RSA-encrypted before it is sent, exactly like the FSolar app.",
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "scan_interval": "Polling interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "The FSolar cloud refreshes roughly every 300 seconds; polling faster only re-reads stale data."
+        }
+      },
+      "device": {
+        "title": "Select battery",
+        "description": "Your account has more than one FLA48300. Choose the one to add.",
+        "data": {
+          "device_sn": "Battery"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate",
+        "description": "Update the password for {username}.",
+        "data": {
+          "username": "Email",
+          "password": "Password"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Felicity Battery",
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid email or password.",
+      "cannot_connect": "Could not reach the FSolar cloud. Check your internet connection.",
+      "no_devices": "No FLA48300 battery was found on this account.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This battery is already configured.",
+      "unique_id_mismatch": "The credentials are for a different battery than the one being reconfigured.",
+      "reauth_successful": "Re-authentication was successful.",
+      "reconfigure_successful": "Reconfiguration was successful."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "state_of_charge": { "name": "State of charge" },
+      "state_of_health": { "name": "State of health" },
+      "voltage": { "name": "Voltage" },
+      "current": { "name": "Current" },
+      "power": { "name": "Power" },
+      "charge_power": { "name": "Charge power" },
+      "discharge_power": { "name": "Discharge power" },
+      "remaining_energy": { "name": "Remaining energy" },
+      "total_energy": { "name": "Total energy" },
+      "temperature": { "name": "Temperature" },
+      "temperature_min": { "name": "Temperature (min)" },
+      "charge_status": {
+        "name": "Charge status",
+        "state": {
+          "standby": "Standby",
+          "charging": "Charging",
+          "discharging": "Discharging"
+        }
+      },
+      "time_remaining": { "name": "Time remaining" },
+      "cell_voltage_delta": { "name": "Cell voltage delta" },
+      "cell_voltage_max": { "name": "Cell voltage (max)" },
+      "cell_voltage_min": { "name": "Cell voltage (min)" },
+      "capacity": { "name": "Capacity" },
+      "rated_power": { "name": "Rated power" },
+      "wifi_signal": { "name": "WiFi signal" },
+      "device_status": {
+        "name": "Device status",
+        "state": {
+          "normal": "Normal",
+          "alarm": "Alarm",
+          "fault": "Fault",
+          "offline": "Offline"
+        }
+      },
+      "warning_count": { "name": "Warning count" },
+      "bms_state": { "name": "BMS state" },
+      "charge_voltage_limit": { "name": "Charge voltage limit" },
+      "discharge_voltage_limit": { "name": "Discharge voltage limit" },
+      "charge_current_limit": { "name": "Charge current limit" },
+      "discharge_current_limit": { "name": "Discharge current limit" },
+      "last_update": { "name": "Last update" },
+      "daily_charge_energy": { "name": "Daily charge energy" },
+      "daily_discharge_energy": { "name": "Daily discharge energy" }
+    },
+    "binary_sensor": {
+      "charging": { "name": "Charging" },
+      "discharging": { "name": "Discharging" },
+      "heating": { "name": "Heating" },
+      "problem": { "name": "Problem" }
+    }
+  }
+}

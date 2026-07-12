@@ -1,0 +1,22 @@
+# Secrets — never commit real credentials
+.env
+.env.local
+
+# Live captures contain the device serial number — keep them local
+fixtures/*.local.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.uv/
+.ruff_cache/
+.pytest_cache/
+.ty_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

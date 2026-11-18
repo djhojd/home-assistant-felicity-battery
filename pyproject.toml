@@ -3,7 +3,9 @@ name = "fsolar"
 version = "0.1.0"
 description = "Home Assistant custom integration for Felicity Solar (FSolar) batteries"
 readme = "README.md"
-requires-python = ">=3.13"
+# Matches the oldest Python the current Home Assistant release supports, so
+# uv.lock doesn't keep older HA versions (and their pinned deps) for older Pythons.
+requires-python = ">=3.14.2"
 dependencies = []
 
 # Default dev group: pure-logic tests + linters. No Home Assistant here, so it

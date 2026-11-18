@@ -2,5 +2,5 @@
   "name": "Felicity Battery (FLA48300)",
   "content_in_root": false,
   "render_readme": true,
-  "homeassistant": "2024.12.0"
+  "homeassistant": "2026.7.0"
 }

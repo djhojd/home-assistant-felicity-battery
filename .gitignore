@@ -1,6 +1,8 @@
 # Secrets — never commit real credentials
 .env
 .env.local
+# Symlink to the local HA MCP config; its URL carries an access token
+.mcp.json
 
 # Live captures contain the device serial number — keep them local
 fixtures/*.local.json

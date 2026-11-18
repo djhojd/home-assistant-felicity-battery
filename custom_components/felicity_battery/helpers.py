@@ -90,7 +90,12 @@ def discharge_power(data: dict[str, Any]) -> float | None:
 # --- Energy / capacity -----------------------------------------------------
 def remaining_energy_kwh(data: dict[str, Any]) -> float | None:
     """Energy currently stored in the pack, in kWh (reported directly)."""
-    return to_float(data.get("remainingBatteryEnergy1"))
+    # The cloud fills one of these two and leaves the other null; which one varies.
+    for key in ("remainingBatteryEnergy1", "remainingBatteryEnergy"):
+        value = to_float(data.get(key))
+        if value is not None:
+            return value
+    return None
 
 
 def total_energy_kwh(data: dict[str, Any]) -> float | None:

@@ -45,6 +45,16 @@ def test_remaining_energy_is_reported_directly(snapshot):
     assert helpers.remaining_energy_kwh(snapshot) == 13.35
 
 
+def test_remaining_energy_falls_back_to_unnumbered_field():
+    data = {"remainingBatteryEnergy1": None, "remainingBatteryEnergy": 4}
+    assert helpers.remaining_energy_kwh(data) == 4.0
+
+
+def test_remaining_energy_keeps_zero():
+    data = {"remainingBatteryEnergy1": "0", "remainingBatteryEnergy": 4}
+    assert helpers.remaining_energy_kwh(data) == 0.0
+
+
 def test_total_energy_is_stable_nameplate(snapshot):
     assert helpers.total_energy_kwh(snapshot) == 15.0
 

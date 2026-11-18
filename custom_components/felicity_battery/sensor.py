@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import timezone
+from datetime import datetime
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -57,7 +57,7 @@ UNIT_AMP_HOUR = "Ah"
 class FelicitySensorDescription(SensorEntityDescription):
     """Describe a Felicity sensor backed by a pure helper function."""
 
-    value_fn: Callable[[dict[str, Any]], StateType]
+    value_fn: Callable[[dict[str, Any]], StateType | datetime]
     attrs_fn: Callable[[dict[str, Any]], dict[str, Any]] | None = None
 
 
@@ -318,8 +318,7 @@ SENSOR_DESCRIPTIONS: tuple[FelicitySensorDescription, ...] = (
         icon="mdi:clock-check-outline",
         device_class=SensorDeviceClass.TIMESTAMP,
         entity_category=EntityCategory.DIAGNOSTIC,
-        # value handled specially (needs the device timezone)
-        value_fn=lambda _data: None,
+        value_fn=helpers.timestamp,
     ),
 )
 
@@ -431,19 +430,11 @@ class FelicityBatterySensor(FelicityBatteryEntity, SensorEntity):
         self._attr_unique_id = f"{coordinator.device_sn}_{description.key}"
 
     @property
-    def native_value(self) -> StateType:
+    def native_value(self) -> StateType | datetime:
         """Return the sensor value."""
         data = self.coordinator.data
         if data is None:
             return None
-        if self.entity_description.key == "last_update":
-            raw = helpers.timestamp_str(data)
-            parsed = dt_util.parse_datetime(raw) if raw else None
-            if parsed is None:
-                return None
-            # The snapshot timestamp is in the plant's local time; attach that
-            # offset so HA stores a correct absolute instant.
-            return parsed.replace(tzinfo=timezone(self.coordinator.device_timezone))
         return self.entity_description.value_fn(data)
 
     @property

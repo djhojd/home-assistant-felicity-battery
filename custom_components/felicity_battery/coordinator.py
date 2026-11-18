@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import re
 import ssl
 from datetime import datetime, timedelta
 from typing import Any
@@ -23,7 +22,6 @@ from .const import (
     DOMAIN,
     ENDPOINT_DEVICE_LIST,
     ENDPOINT_DEVICE_SNAPSHOT,
-    ENDPOINT_PLANT_LIST,
 )
 from .ssl_context import get_ssl_context
 
@@ -57,7 +55,6 @@ class FelicityBatteryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.device_model: str | None = None
         self.device_alias: str | None = None
         self.device_sw_version: str | None = None
-        self.device_timezone: timedelta = timedelta(hours=0)
         self._session = async_get_clientsession(hass)
         self._ssl: ssl.SSLContext | None = None
 
@@ -101,19 +98,8 @@ class FelicityBatteryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return True
         return bool(data and data.get("code") == 401)
 
-    @staticmethod
-    def _parse_utc_offset(tz_str: str) -> timedelta:
-        """Parse 'UTC+03:00' / 'UTC-03:00' to a timedelta."""
-        match = re.match(r"UTC([+-])(\d{2}):(\d{2})", tz_str or "")
-        if not match:
-            return timedelta(hours=0)
-        sign = 1 if match.group(1) == "+" else -1
-        return timedelta(
-            hours=sign * int(match.group(2)), minutes=sign * int(match.group(3))
-        )
-
     async def fetch_device_info(self) -> None:
-        """Fetch model, firmware and timezone metadata for the device."""
+        """Fetch model and firmware metadata for the device."""
         await self._ensure_token()
 
         payload = {
@@ -147,24 +133,6 @@ class FelicityBatteryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         break
         except aiohttp.ClientError as err:
             raise UpdateFailed(f"Failed to fetch device info: {err}") from err
-
-        # Timezone lives on the plant, used to localize the snapshot timestamp.
-        try:
-            resp = await self._post(
-                f"{API_BASE_URL}{ENDPOINT_PLANT_LIST}",
-                {"status": "all", "pageSize": 10, "pageNum": 1},
-            )
-            data = await resp.json()
-            if data.get("code") == 200:
-                for plant in data.get("data", {}).get("dataList", []):
-                    for dev in plant.get("plantDeviceList", []):
-                        if dev.get("deviceSn") == self.device_sn:
-                            self.device_timezone = self._parse_utc_offset(
-                                plant.get("timeZone", "")
-                            )
-                            return
-        except aiohttp.ClientError as err:
-            _LOGGER.warning("Failed to fetch plant timezone: %s", err)
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch a fresh snapshot, re-authenticating once if the token expired."""

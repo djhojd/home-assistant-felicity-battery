@@ -15,6 +15,8 @@ Sign conventions on the FLA48300:
 
 from __future__ import annotations
 
+import re
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from .const import (
@@ -291,10 +293,24 @@ def is_problem(data: dict[str, Any]) -> bool | None:
     return (status not in (None, "normal")) or bool(warnings)
 
 
-def timestamp_str(data: dict[str, Any]) -> str | None:
-    """Raw 'YYYY-MM-DD HH:MM:SS' timestamp of this snapshot (device local)."""
-    value = data.get("dataTimeStr")
-    return value if isinstance(value, str) and value else None
+def timestamp(data: dict[str, Any]) -> datetime | None:
+    """When this snapshot was taken, as an aware datetime.
+
+    ``dataTimeStr`` is the battery's clock in the snapshot's own ``timeZone``,
+    which can differ from the plant's zone (the clock doesn't follow DST).
+    The epoch ``dataTime`` is wrong: the server reads the string as UTC+8.
+    """
+    raw = data.get("dataTimeStr")
+    match = re.fullmatch(r"UTC([+-])(\d{2}):(\d{2})", str(data.get("timeZone") or ""))
+    if not isinstance(raw, str) or not match:
+        return None
+    try:
+        local = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return None
+    sign = 1 if match.group(1) == "+" else -1
+    offset = timedelta(hours=int(match.group(2)), minutes=int(match.group(3)))
+    return local.replace(tzinfo=timezone(sign * offset))
 
 
 # --- Derived: time remaining ----------------------------------------------

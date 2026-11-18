@@ -34,7 +34,6 @@ API_HEADERS = {
 LOGIN_URL = "/app/base/userlogin"
 ENDPOINT_DEVICE_LIST = "/app/device/list_device_all_type"
 ENDPOINT_DEVICE_SNAPSHOT = "/app/device/get_device_snapshot"
-ENDPOINT_PLANT_LIST = "/app/plant/list_plant"
 
 # Public key the FSolar app uses to RSA-encrypt the password on login.
 RSA_PUBLIC_KEY = (

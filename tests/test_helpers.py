@@ -7,6 +7,8 @@ unit conversions, padding-sentinel filtering, and derived calculations.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 import pytest
 from felicity_battery import helpers
 
@@ -183,8 +185,34 @@ def test_is_problem_true_on_warnings():
     assert helpers.is_problem({"status": "NM", "warningCount": 3}) is True
 
 
-def test_timestamp_str(snapshot):
-    assert helpers.timestamp_str(snapshot) == "2026-07-12 02:10:00"
+def test_timestamp_uses_snapshot_timezone(snapshot):
+    # 02:10 at UTC+03:00, the snapshot's own zone
+    expected = datetime(2026, 7, 11, 23, 10, tzinfo=UTC)
+    assert helpers.timestamp(snapshot) == expected
+
+
+def test_timestamp_ignores_plant_zone_when_clock_skips_dst():
+    # Clock still on summer time (+03:00) in winter: 20:35 local is 17:35 UTC.
+    data = {"dataTimeStr": "2026-12-01 20:35:00", "timeZone": "UTC+03:00"}
+    assert helpers.timestamp(data) == datetime(2026, 12, 1, 17, 35, tzinfo=UTC)
+
+
+def test_timestamp_negative_offset():
+    data = {"dataTimeStr": "2026-12-01 08:00:00", "timeZone": "UTC-03:30"}
+    assert helpers.timestamp(data) == datetime(2026, 12, 1, 11, 30, tzinfo=UTC)
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"dataTimeStr": "2026-12-01 08:00:00"},
+        {"dataTimeStr": "2026-12-01 08:00:00", "timeZone": "Europe/Bucharest"},
+        {"dataTimeStr": "garbage", "timeZone": "UTC+02:00"},
+        {"timeZone": "UTC+02:00"},
+    ],
+)
+def test_timestamp_none_without_usable_fields(data):
+    assert helpers.timestamp(data) is None
 
 
 # --- Derived: time remaining ----------------------------------------------

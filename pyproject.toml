@@ -31,8 +31,8 @@ select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # `asyncio_mode = auto` is added in CI once the HA harness (which brings
-# pytest-asyncio) is installed via `uv sync --group ha`. The local pure-logic
-# suite has no async tests, so it isn't set here.
+# pytest-asyncio) is installed via `uv sync --group ha`. The async HA tests are
+# skipped without the harness, so it isn't set here.
 
 [tool.ty.environment]
 # Home Assistant isn't installed in the default (Windows) dev env; don't fail

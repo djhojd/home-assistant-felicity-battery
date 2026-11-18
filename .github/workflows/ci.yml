@@ -15,10 +15,10 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Set up Python
-        run: uv python install 3.13
+        run: uv python install
 
       - name: Sync (with Home Assistant harness)
-        run: uv sync --group ha
+        run: uv sync --locked --group ha
 
       - name: Ruff (lint)
         run: uv run ruff check .
@@ -33,7 +33,8 @@ jobs:
           custom_components/felicity_battery/helpers.py
 
       - name: Pytest
-        run: uv run pytest -q
+        # asyncio_mode comes from the HA harness's pytest-asyncio; see pyproject.toml.
+        run: uv run pytest -q -o asyncio_mode=auto
 
   hassfest:
     runs-on: ubuntu-latest
